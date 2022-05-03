@@ -10,19 +10,15 @@ const app = express();
 export function startExportServer() {
   assignMiddlewares(app);
 
-  assignRoutes();
-
-  app.listen(EXPORT_SERVER_PORT, () => {
-    // prettier-ignore
-    console.log(`Export server listening at http://localhost/${EXPORT_SERVER_PORT}`);
-  });
-}
-
-function assignRoutes() {
   app.post("/export", (request, response) => {
     setTimeout(() => {
       sendToCallbackServer(request, response);
     }, 2_000);
+  });
+
+  app.listen(EXPORT_SERVER_PORT, () => {
+    // prettier-ignore
+    console.log(`Export server listening at http://localhost/${EXPORT_SERVER_PORT}`);
   });
 }
 

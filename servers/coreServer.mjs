@@ -9,10 +9,16 @@ const app = express();
 
 const clients = [];
 
+/**
+ * Server that represents the core API (primary communication point for the
+ * frontend).
+ */
 export function startCoreServer() {
   assignMiddlewares(app);
 
-  assignRoutes();
+  app.use("/events", addEventSourceClient);
+
+  app.post("/export", sendExportRequest);
 
   app.listen(CORE_SERVER_PORT, () => {
     // prettier-ignore
@@ -20,39 +26,7 @@ export function startCoreServer() {
   });
 }
 
-function assignRoutes() {
-  app.use("/events", (request, response) => {
-    console.log("Listening for event source");
-
-    const client = addClient(response);
-
-    return clients.push(client);
-  });
-
-  app.post("/export", (request, response) => {
-    const options = {
-      hostname: "localhost",
-      port: EXPORT_SERVER_PORT,
-      path: "/export",
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    };
-
-    const exportRequest = http.request(options, () => {
-      response.sendStatus(200);
-    });
-
-    exportRequest.on("error", (err) => {
-      response.sendStatus(400);
-    });
-
-    exportRequest.end();
-  });
-}
-
-export function sendUpdates(fileName) {
+export function sendEventSourceUpdates(fileName) {
   clients.forEach((response) => {
     const contents = JSON.stringify({
       fileName,
@@ -62,10 +36,39 @@ export function sendUpdates(fileName) {
   });
 }
 
-function addClient(response) {
-  return response.writeHead(200, {
+/**
+ * Sends a request to the server that processes exports.
+ */
+function sendExportRequest(request, response) {
+  const options = {
+    hostname: "localhost",
+    port: EXPORT_SERVER_PORT,
+    path: "/export",
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  };
+
+  const exportRequest = http.request(options, () => {
+    response.sendStatus(200);
+  });
+
+  exportRequest.on("error", (err) => {
+    response.sendStatus(400);
+  });
+
+  exportRequest.end();
+}
+
+function addEventSourceClient(request, response) {
+  console.log("Listening for event source");
+
+  const client = response.writeHead(200, {
     "Content-Type": "text/event-stream",
     "Cache-Control": "no-cache",
     Connection: "keep-alive",
   });
+
+  clients.push(client);
 }
