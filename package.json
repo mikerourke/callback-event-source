@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "build": "rollup -c",
-    "watch": "rollup -c -w",
+    "watch:web": "rollup -c -w",
+    "watch:server": "nodemon servers/servers.mjs",
     "start": "sirv public --no-clear",
     "check": "svelte-check --tsconfig ./tsconfig.json"
   },

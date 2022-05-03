@@ -19,7 +19,7 @@
     "noUnusedLocals": true,
     "outDir": "./build",
     "resolveJsonModule": true,
-    "rootDir": "src",
+    "rootDir": "web",
     "skipLibCheck": true,
     "sourceMap": false,
     "strict": true,
@@ -27,6 +27,6 @@
     "target": "ES2015",
     "types": ["svelte"]
   },
-  "include": ["src/**/*"],
+  "include": ["web/**/*"],
   "exclude": ["node_modules/*", "scripts/*"]
 }

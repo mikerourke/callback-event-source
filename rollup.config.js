@@ -38,7 +38,7 @@ function serve() {
 }
 
 export default {
-  input: "src/main.ts",
+  input: "web/main.ts",
   output: {
     sourcemap: true,
     format: "iife",
