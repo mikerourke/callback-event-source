@@ -20,24 +20,30 @@ export function startExportServer() {
 
 function assignRoutes() {
   app.post("/export", (request, response) => {
-    const options = {
-      hostname: "localhost",
-      port: CALLBACK_SERVER_PORT,
-      path: "/done",
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    };
-
-    const callbackRequest = http.request(options, () => {
-      response.sendStatus(200);
-    });
-
-    callbackRequest.on("error", (err) => {
-      response.sendStatus(400);
-    });
-
-    callbackRequest.end();
+    setTimeout(() => {
+      sendToCallbackServer(request, response);
+    }, 2_000);
   });
+}
+
+function sendToCallbackServer(request, response) {
+  const options = {
+    hostname: "localhost",
+    port: CALLBACK_SERVER_PORT,
+    path: "/done",
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  };
+
+  const callbackRequest = http.request(options, () => {
+    response.sendStatus(200);
+  });
+
+  callbackRequest.on("error", (err) => {
+    response.sendStatus(400);
+  });
+
+  callbackRequest.end();
 }

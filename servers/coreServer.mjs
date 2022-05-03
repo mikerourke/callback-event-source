@@ -21,7 +21,7 @@ export function startCoreServer() {
 }
 
 function assignRoutes() {
-  app.get("/events/listen", (request, response) => {
+  app.use("/events", (request, response) => {
     console.log("Listening for event source");
 
     const client = addClient(response);
@@ -29,13 +29,7 @@ function assignRoutes() {
     return clients.push(client);
   });
 
-  app.post("/events/update", (request, response) => {
-    console.log("Event source updated!");
-
-    update();
-  });
-
-  app.post("/export/create", (request, response) => {
+  app.post("/export", (request, response) => {
     const options = {
       hostname: "localhost",
       port: EXPORT_SERVER_PORT,
@@ -58,12 +52,14 @@ function assignRoutes() {
   });
 }
 
-function update() {
+export function sendUpdates(fileName) {
   clients.forEach((response) => {
-    response.write("data: update\n\n");
-  });
+    const contents = JSON.stringify({
+      fileName,
+    });
 
-  clients.length = 0;
+    response.write(`data: ${contents}\n\n`);
+  });
 }
 
 function addClient(response) {
